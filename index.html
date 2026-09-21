@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0f3d2e" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1f18" media="(prefers-color-scheme: dark)">
+<title>景智荟庭院 · 智能灌溉与自动化方案</title>
+<meta name="description" content="景智荟庭院 Home Assistant 自动化整体方案:按季节与天气自动灌溉、水景定时、灯光定时、安全告警。">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f4f6f2;--surface:#ffffff;--surface-2:#eef2ea;--line:#dde3d6;
+  --ink:#14211b;--ink-2:#4b5a52;--ink-3:#7a877f;
+  --brand:#0f3d2e;--brand-2:#1f6b4d;--brand-soft:#dff0e6;--accent:#c9a54a;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--neutral:#8a918c;
+  --good:#0ca30c;--warn:#fab219;--serious:#ec835a;--critical:#d03b3b;
+  --r:16px;--r-s:10px;--shadow:0 1px 2px rgba(20,33,27,.06),0 8px 24px rgba(20,33,27,.06);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1512;--surface:#171f1b;--surface-2:#1e2823;--line:#2a3630;
+  --ink:#f2f5f1;--ink-2:#b9c4bc;--ink-3:#84908a;
+  --brand:#0b1f18;--brand-2:#2f8f68;--brand-soft:#173327;--accent:#d8b866;
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--neutral:#8a918c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1512;--surface:#171f1b;--surface-2:#1e2823;--line:#2a3630;
+    --ink:#f2f5f1;--ink-2:#b9c4bc;--ink-3:#84908a;
+    --brand:#0b1f18;--brand-2:#2f8f68;--brand-soft:#173327;--accent:#d8b866;
+    --s1:#3987e5;--s2:#d95926;--s3:#199e70;--neutral:#8a918c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3,h4{margin:0;line-height:1.25;font-weight:700;letter-spacing:.01em}
+p{margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+@media(min-width:760px){.wrap{padding:0 28px}}
+
+/* ---------- top nav ---------- */
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:10px;height:54px}
+.nav .brand{font-weight:800;font-size:15px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.nav .brand i{width:10px;height:10px;border-radius:50%;background:var(--brand-2);display:inline-block;box-shadow:0 0 0 4px var(--brand-soft)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;padding:4px 2px;mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:none;text-decoration:none;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--surface);transition:.2s}
+.chips a.on,.chips a:hover{background:var(--brand-2);border-color:var(--brand-2);color:#fff}
+.theme{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:grid;place-items:center}
+
+/* ---------- hero ---------- */
+.hero{background:radial-gradient(120% 140% at 10% 0%,#1f6b4d 0%,#0f3d2e 45%,#0a2a20 100%);color:#fff;padding:36px 0 28px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto -20% -60% -20%;height:70%;background:radial-gradient(60% 100% at 50% 100%,rgba(201,165,74,.35),transparent 70%)}
+.hero .wrap{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;padding:6px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px}
+.hero h1{font-size:clamp(28px,6vw,44px);margin:16px 0 10px;letter-spacing:0}
+.hero .lead{font-size:clamp(15px,2.6vw,18px);opacity:.9;max-width:640px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:24px}
+@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-s);padding:12px 14px}
+.stat b{display:block;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;opacity:.85}
+.hero .meta{margin-top:18px;font-size:12.5px;opacity:.75}
+
+/* ---------- sections ---------- */
+section{padding:34px 0 8px;scroll-margin-top:64px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.sec-head .num{font-size:12px;font-weight:800;color:var(--brand-2);letter-spacing:.1em}
+.sec-head h2{font-size:clamp(20px,4.5vw,26px)}
+.sec-head p{color:var(--ink-2);font-size:14px;margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+@media(min-width:760px){.card{padding:20px}}
+.grid{display:grid;gap:12px}
+@media(min-width:760px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:repeat(3,1fr)}}
+.card h3{font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card h3 .ic{width:28px;height:28px;border-radius:8px;display:inline-grid;place-items:center;font-size:15px;background:var(--brand-soft);color:var(--brand-2);flex:none}
+.muted{color:var(--ink-2);font-size:14px}
+.small{font-size:13px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.badge.good{background:color-mix(in srgb,var(--good) 14%,var(--surface));border-color:color-mix(in srgb,var(--good) 40%,var(--line));color:var(--ink)}
+.badge.warn{background:color-mix(in srgb,var(--warn) 18%,var(--surface));border-color:color-mix(in srgb,var(--warn) 50%,var(--line));color:var(--ink)}
+.badge.crit{background:color-mix(in srgb,var(--critical) 14%,var(--surface));border-color:color-mix(in srgb,var(--critical) 40%,var(--line));color:var(--ink)}
+.badge.wait{background:var(--surface-2);color:var(--ink-2)}
+ul.clean{list-style:none;margin:0;padding:0}
+ul.clean li{padding:9px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+ul.clean li:first-child{border-top:0;padding-top:2px}
+ul.clean li .k{flex:none;min-width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--brand-soft);color:var(--brand-2);margin-top:2px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-weight:400;color:var(--ink-3);font-size:18px;transition:.2s}
+details[open] summary::after{transform:rotate(45deg)}
+details .body{padding-top:8px;font-size:14px;color:var(--ink-2)}
+
+/* ---------- timeline ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:6px 0 14px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.dot.sq{border-radius:3px}
+.dot.dia{transform:rotate(45deg);border-radius:2px}
+.dot.tri{width:0;height:0;border:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid var(--neutral);box-shadow:none;border-radius:0}
+.c-irr{background:var(--s1)}.c-water{background:var(--s3)}.c-light{background:var(--s2)}
+.tl{position:relative;margin:0;padding:0;list-style:none}
+.tl::before{content:"";position:absolute;left:62px;top:6px;bottom:6px;width:2px;background:var(--line);border-radius:2px}
+.tl li{position:relative;display:grid;grid-template-columns:54px 20px 1fr;gap:6px;align-items:start;padding:8px 0}
+.tl time{font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px;color:var(--ink-2);text-align:right;padding-top:2px}
+.tl .mk{display:grid;place-items:center;padding-top:5px}
+.tl .mk .dot{width:14px;height:14px;box-shadow:0 0 0 2px var(--line)}
+.tl .ev{background:var(--surface-2);border-radius:var(--r-s);padding:8px 11px;font-size:14px}
+.tl .ev b{display:block;font-size:14.5px}
+.tl .ev .tag{font-size:12px;color:var(--ink-3)}
+.tl li.range .ev{border-left:3px solid var(--s3)}
+.tl li.night{opacity:.9}
+@media(min-width:760px){.tl li{grid-template-columns:70px 20px 1fr}.tl::before{left:78px}}
+
+/* ---------- season cards ---------- */
+.season{position:relative;overflow:hidden}
+.season .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.season .top .name{font-size:18px;font-weight:800}
+.season .top .range{font-size:12.5px;color:var(--ink-3)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.kv div{background:var(--surface-2);border-radius:var(--r-s);padding:8px 10px}
+.kv div span{display:block;font-size:11.5px;color:var(--ink-3)}
+.kv div b{font-size:16px;font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:64px 1fr 44px;align-items:center;gap:8px;font-size:13.5px}
+.bar .track{height:12px;background:var(--surface-2);border-radius:6px;overflow:hidden;position:relative}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--s1);border-radius:0 4px 4px 0}
+.bar .v{font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:var(--ink-2)}
+.season .foot{margin-top:12px;font-size:13px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:10px}
+.season.summer{border-top:4px solid #e0a63a}.season.mid{border-top:4px solid var(--brand-2)}.season.winter{border-top:4px solid var(--s1)}
+
+/* ---------- chain ---------- */
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.chain .node{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px;padding:7px 11px;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+.chain .node small{font-weight:600;color:var(--brand-2)}
+.chain .arr{color:var(--ink-3);font-size:14px}
+.chain .node.wait{background:var(--surface-2);color:var(--ink-3);border:1px dashed var(--line)}
+
+/* ---------- gates / flow ---------- */
+.gates{display:grid;gap:8px}
+@media(min-width:640px){.gates{grid-template-columns:1fr 1fr}}
+.gate{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:var(--r-s);padding:10px 12px;font-size:14px}
+.gate .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--brand-2);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center}
+.gate.w .n{background:var(--s1)}
+.gate b{display:block}
+.flow{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.flow li{position:relative;padding:0 0 14px 34px;font-size:14.5px}
+.flow li::before{content:"";position:absolute;left:11px;top:22px;bottom:-2px;width:2px;background:var(--line)}
+.flow li:last-child::before{display:none}
+.flow li .n{position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--brand-soft);color:var(--brand-2);font-size:12px;font-weight:800;display:grid;place-items:center;border:2px solid var(--surface)}
+.flow li b{display:block}
+.flow li.go .n{background:var(--good);color:#fff}
+.flow li.stop .n{background:var(--serious);color:#fff}
+.flow li span{color:var(--ink-2)}
+
+/* ---------- table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:10px 8px;border-top:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:12.5px;color:var(--ink-3);font-weight:600;border-top:0}
+.tbl td:first-child{font-weight:600}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:560px){
+  .tbl thead{display:none}
+  .tbl tr{display:grid;grid-template-columns:1fr auto;border-top:1px solid var(--line);padding:10px 0}
+  .tbl td{border:0;padding:2px 0}
+  .tbl td:first-child{grid-column:1}
+  .tbl td.st{grid-column:2;grid-row:1;justify-self:end}
+  .tbl td.note{grid-column:1/-1;color:var(--ink-2);font-size:13px}
+}
+
+/* ---------- roadmap ---------- */
+.road{display:grid;gap:12px}
+@media(min-width:760px){.road{grid-template-columns:repeat(3,1fr)}}
+.road .card h3 .ic{background:var(--surface-2);color:var(--ink-2)}
+
+footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center;color:var(--ink-3);font-size:13px}
+.up{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:42px;height:42px;border-radius:50%;background:var(--brand-2);color:#fff;border:0;box-shadow:var(--shadow);font-size:18px;display:grid;place-items:center;opacity:0;pointer-events:none;transition:.25s;cursor:pointer}
+.up.show{opacity:1;pointer-events:auto}
+@media print{.nav,.up,.theme{display:none}.hero{background:#0f3d2e}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="页面导航">
+  <div class="wrap">
+    <div class="brand"><i aria-hidden="true"></i>景智荟庭院</div>
+    <div class="chips" id="chips">
+      <a href="#day">一天</a><a href="#irrigation">灌溉</a><a href="#flow">决策</a><a href="#water">水景</a><a href="#light">灯光</a><a href="#safety">安全</a><a href="#sensors">传感器</a><a href="#todo">待办</a>
+    </div>
+    <button class="theme" id="theme" aria-label="切换深浅色">◑</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Home Assistant · 自动化方案 v1</span>
+    <h1>景智荟庭院<br>智能灌溉与自动化方案</h1>
+    <p class="lead">按季节、天气预报和土壤湿度自动决定浇不浇、浇多久;水景与灯光定时运行;水泵、阀门、设备全天有人盯着。</p>
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><b>12</b><span>条自动化,已全部上线</span></div>
+      <div class="stat" role="listitem"><b>5<small style="font-size:14px;opacity:.8"> +1</small></b><span>灌溉分区自动运行,罗汉松待接</span></div>
+      <div class="stat" role="listitem"><b>4<small style="font-size:14px;opacity:.8">+2</small></b><span>道闸门,冬季再加两道</span></div>
+      <div class="stat" role="listitem"><b>7</b><span>项安全保护与告警</span></div>
+    </div>
+    <p class="meta">上海松江 · 更新于 2026 年 9 月 22 日 · 通知目前发到 Home Assistant 通知栏</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= 一天 ================= -->
+<section id="day">
+  <div class="sec-head"><span class="num">01</span><div><h2>花园的一天</h2><p>以夏季为例。灌溉时间随季节变化,其余固定。</p></div></div>
+  <div class="card">
+    <div class="legend" aria-label="图例">
+      <span><i class="dot c-irr"></i>灌溉</span>
+      <span><i class="dot sq c-water"></i>水景与水泵</span>
+      <span><i class="dot dia c-light"></i>灯光</span>
+      <span><i class="dot tri"></i>报告与检查</span>
+    </div>
+    <ol class="tl">
+      <li class="night"><time>00:25</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵恢复</b><span class="tag">瀑布、过滤泵、增氧泵恢复到暂停前的状态</span></div></li>
+      <li class="night"><time>00:35</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>恢复检查</b><span class="tag">任何一台泵仍是关的,发告警</span></div></li>
+      <li><time>06:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>灌溉决策与执行</b><span class="tag">夏季 06:00 · 春秋 06:30 · 冬季 10:00。过闸门后依次浇 5 个区,约 76 分钟</span></div></li>
+      <li><time>07:30</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>花园早报</b><span class="tag">今天浇了没、为什么;天气、土壤、水泵、电表状态</span></div></li>
+      <li><time>09:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>喷泉与水景开</b><span class="tag">南喷泉、南水景、北水景。风速超过 20 km/h 喷泉不开</span></div></li>
+      <li class="range"><time>11:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">瀑布、过滤泵、增氧泵先拍快照再关闭,12:25 恢复,12:35 检查</span></div></li>
+      <li><time>17:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>高温补浇(仅夏季,最高温 ≥ 35°)</b><span class="tag">花境、菜园各 5 分钟,草坪不补,避免叶面过夜带水</span></div></li>
+      <li><time>日落+10′</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>花园灯光开</b><span class="tag">东花园灯、西花园灯、灯光。随日落时间自动变化</span></div></li>
+      <li><time>22:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>喷泉与水景关</b><span class="tag">冬季(12 到 2 月)瀑布同时关,08:00 再开</span></div></li>
+      <li><time>22:30</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>灯光关</b><span class="tag">周日到周四 22:30,周五周六 23:30</span></div></li>
+      <li class="night"><time>23:50</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>降雨日期补记</b><span class="tag">今天预报降雨 ≥ 2 mm 就记为「最近一次下雨」</span></div></li>
+      <li class="night range"><time>23:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">与中午相同,00:25 恢复</span></div></li>
+    </ol>
+    <p class="small" style="margin-top:12px">全天持续监测:水泵停机、设备掉线、喷泉大风、气象预警。</p>
+  </div>
+</section>
+
+<!-- ================= 灌溉 ================= -->
+<section id="irrigation">
+  <div class="sec-head"><span class="num">02</span><div><h2>灌溉方案</h2><p>三个季节档按月份自动切换,也可在仪表盘手动锁定。</p></div></div>
+
+  <div class="grid c3">
+    <div class="card season summer">
+      <div class="top"><span class="name">☀️ 夏季</span><span class="range">6 月 1 日 – 9 月 30 日</span></div>
+      <div class="kv"><div><span>间隔</span><b>每 2 天</b></div><div><span>开始</span><b>06:00</b></div></div>
+      <div class="bars" aria-label="夏季各区时长">
+        <div class="bar"><span>草坪</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="v">20 分</span></div>
+        <div class="bar"><span>花园 / 花境</span><div class="track"><div class="fill" style="width:60%"></div></div><span class="v">12 分</span></div>
+        <div class="bar"><span>菜园</span><div class="track"><div class="fill" style="width:60%"></div></div><span class="v">12 分</span></div>
+      </div>
+      <p class="foot">一轮 76 分钟。预报最高温 ≥ 33° 改为每天;≥ 35° 下午 5 点花境、菜园各补 5 分钟;北花园土壤 &lt; 25% 提前浇。</p>
+    </div>
+    <div class="card season mid">
+      <div class="top"><span class="name">🍃 春秋</span><span class="range">3–5 月 · 10–11 月</span></div>
+      <div class="kv"><div><span>间隔</span><b>每 3 天</b></div><div><span>开始</span><b>06:30</b></div></div>
+      <div class="bars" aria-label="春秋各区时长">
+        <div class="bar"><span>草坪</span><div class="track"><div class="fill" style="width:75%"></div></div><span class="v">15 分</span></div>
+        <div class="bar"><span>花园 / 花境</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="v">10 分</span></div>
+        <div class="bar"><span>菜园</span><div class="track"><div class="fill" style="width:50%"></div></div><span class="v">10 分</span></div>
+      </div>
+      <p class="foot">一轮 60 分钟。上海秋季常有秋旱,这一档避免按冬季浇太少。</p>
+    </div>
+    <div class="card season winter">
+      <div class="top"><span class="name">❄️ 冬季</span><span class="range">12 月 1 日 – 2 月底</span></div>
+      <div class="kv"><div><span>间隔</span><b>每 8 天</b></div><div><span>开始</span><b>10:00</b></div></div>
+      <div class="bars" aria-label="冬季各区时长">
+        <div class="bar"><span>草坪</span><div class="track"><div class="fill" style="width:60%"></div></div><span class="v">12 分</span></div>
+        <div class="bar"><span>花园 / 花境</span><div class="track"><div class="fill" style="width:40%"></div></div><span class="v">8 分</span></div>
+        <div class="bar"><span>菜园</span><div class="track"><div class="fill" style="width:40%"></div></div><span class="v">8 分</span></div>
+      </div>
+      <p class="foot">一轮 48 分钟。上午浇,让水在夜间降温前渗下去。另加防冻两道闸。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h3><span class="ic">⇢</span>浇水顺序 · 任何时刻只开一个阀</h3>
+    <p class="muted">每个阀关闭并确认后再开下一个,保证水压。括号内为夏季时长。</p>
+    <div class="chain">
+      <span class="node">东草坪 <small>20′</small></span><span class="arr">→</span>
+      <span class="node">东花园 <small>12′</small></span><span class="arr">→</span>
+      <span class="node">花境 <small>12′</small></span><span class="arr">→</span>
+      <span class="node">西草坪 <small>20′</small></span><span class="arr">→</span>
+      <span class="node">菜园 <small>12′</small></span><span class="arr">→</span>
+      <span class="node wait">南花园 · 罗汉松滴灌 <small>待接</small></span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h3><span class="ic">⛔</span>四道闸门 · 任一不过就跳过,并写明原因</h3>
+    <div class="gates">
+      <div class="gate"><span class="n">1</span><div><b>今天预报有雨</b>降雨 ≥ 2 mm,或天气状况为雨</div></div>
+      <div class="gate"><span class="n">2</span><div><b>昨天实际下过雨</b>降雨 ≥ 5 mm(取自气象逐日实况)</div></div>
+      <div class="gate"><span class="n">3</span><div><b>土壤还湿</b>北花园土壤湿度 ≥ 38%</div></div>
+      <div class="gate"><span class="n">4</span><div><b>手动暂停</b>仪表盘「灌溉暂停」开关打开</div></div>
+      <div class="gate w"><span class="n">冬</span><div><b>防冻</b>当晚最低温 ≤ 1°,或白天最高温 &lt; 5°</div></div>
+      <div class="gate w"><span class="n">冬</span><div><b>近期有雨</b>7 天内下过雨</div></div>
+    </div>
+    <details><summary>气象预警怎么处理</summary><div class="body">松江气象预警出现时立刻通知。若含台风、暴雨、大雨、大风,当天灌溉自动跳过,并关闭南喷泉。</div></details>
+    <details><summary>跳过的那天算不算浇过</summary><div class="body">不算,也不重置计数。雨停后第一个早上重新判断:土还湿就继续跳过,干了才浇。这样既不会在雨后立刻浇,也不会因为一场小雨拖延太久。</div></details>
+    <details><summary>怎么改时长或间隔</summary><div class="body">所有数字集中在一处。改数字、推送一次即可,不需要动其他逻辑。</div></details>
+  </div>
+</section>
+
+<!-- ================= 决策 ================= -->
+<section id="flow">
+  <div class="sec-head"><span class="num">03</span><div><h2>每天到点后发生什么</h2><p>一条自动化完成判断、执行、记录三件事。</p></div></div>
+  <div class="card">
+    <ol class="flow">
+      <li><span class="n">1</span><b>判断季节与时间</b><span>按月份或手动锁定得到季节档,确认现在是这一档的开始时间。</span></li>
+      <li><span class="n">2</span><b>取当天与昨天的天气</b><span>逐日预报:降雨量、最高温、最低温、天气状况;昨天的实际降雨。</span></li>
+      <li><span class="n">3</span><b>过四道闸门</b><span>预报雨、昨日雨、土壤湿度、手动暂停;冬季再加防冻与近期有雨;严重气象预警也在这里拦。</span></li>
+      <li><span class="n">4</span><b>看间隔到了没</b><span>距上次灌溉的天数 ≥ 本季间隔才浇;夏季高温 ≥ 33° 间隔变 1 天;夏季土壤 &lt; 25% 则不看间隔直接浇。</span></li>
+      <li class="go"><span class="n">✓</span><b>浇:记录日期,依次开阀</b><span>先记下今天为「上次灌溉日期」,再按顺序开阀,每区到时关闭并确认。</span></li>
+      <li class="stop"><span class="n">✕</span><b>跳过:写明原因</b><span>「跳过:今天预报降雨 6 毫米」这类一句话。</span></li>
+      <li><span class="n">6</span><b>写入仪表盘并通知</b><span>决策结果显示在仪表盘顶部卡片,同时发一条通知,07:30 早报再汇总一次。</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= 水景 ================= -->
+<section id="water">
+  <div class="sec-head"><span class="num">04</span><div><h2>水景与水泵</h2><p>锦鲤池是全园最需要盯的地方。</p></div></div>
+  <div class="grid c2">
+    <div class="card">
+      <h3><span class="ic">🐟</span>锦鲤池</h3>
+      <ul class="clean">
+        <li><span class="k">停</span><div><b>每天 11:55 与 23:55 暂停 30 分钟</b><div class="muted">瀑布、过滤泵、增氧泵。关闭前先拍状态快照,30 分钟后恢复到暂停前的样子,你手动关掉的不会被自动打开。</div></div></li>
+        <li><span class="k">警</span><div><b>泵停机告警</b><div class="muted">过滤泵或增氧泵在非暂停时段停超过 15 分钟,或暂停结束 10 分钟后仍未恢复,立刻通知。夏季高温缺氧几小时就有危险。</div></div></li>
+        <li><span class="k">排</span><div><b>排水超时保护</b><div class="muted">排水阀打开 30 分钟自动关闭并通知,防止把池子放空。</div></div></li>
+        <li><span class="k">冬</span><div><b>冬季瀑布夜停</b><div class="muted">12 到 2 月 22:00 关、08:00 开,减少水面夜间降温。过滤与增氧不受影响。</div></div></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic">🐢</span>龟池 · 喷泉 · 水景</h3>
+      <ul class="clean">
+        <li><span class="k">滤</span><div><b>龟池过滤全天运行</b><div class="muted">纳入停机告警,停超过 15 分钟通知。</div></div></li>
+        <li><span class="k">泉</span><div><b>南喷泉、南水景、北水景 09:00 开 22:00 关</b><div class="muted">白天观赏,夜间省电降噪。</div></div></li>
+        <li><span class="k">风</span><div><b>喷泉大风保护</b><div class="muted">风速 &gt; 20 km/h 持续 10 分钟关喷泉;回落 &lt; 15 km/h 持续 30 分钟且在运行时段内自动重开。</div></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 灯光 ================= -->
+<section id="light">
+  <div class="sec-head"><span class="num">05</span><div><h2>灯光</h2><p>跟着日落走,不用按季节改时间。</p></div></div>
+  <div class="card">
+    <div class="kv" style="grid-template-columns:repeat(3,1fr)">
+      <div><span>开</span><b>日落 +10′</b></div>
+      <div><span>关 · 周日至周四</span><b>22:30</b></div>
+      <div><span>关 · 周五周六</span><b>23:30</b></div>
+    </div>
+    <p class="muted">东花园灯、西花园灯、灯光三路同开同关。原有遥控器按键随时可以手动覆盖。</p>
+  </div>
+</section>
+
+<!-- ================= 安全 ================= -->
+<section id="safety">
+  <div class="sec-head"><span class="num">06</span><div><h2>安全保护与告警</h2><p>宁可多提醒一次,不让一个阀门开一夜。</p></div></div>
+  <div class="grid c2">
+    <div class="card">
+      <h3><span class="ic">🛡</span>保护动作(自动执行)</h3>
+      <ul class="clean">
+        <li><span class="k">1</span><div><b>单阀运行 + 关阀确认</b><div class="muted">浇水任何时刻只开一个阀,关闭后 5 秒复查,没关就再关。</div></div></li>
+        <li><span class="k">2</span><div><b>阀门 30 分钟超时自动关</b><div class="muted">原有保护,保留。任何灌溉阀连续开 30 分钟即强制关闭。</div></div></li>
+        <li><span class="k">3</span><div><b>系统重启后关闭全部灌溉阀</b><div class="muted">重启前如正在浇水,阀门不会一直开着。</div></div></li>
+        <li><span class="k">4</span><div><b>排水 30 分钟自动关</b><div class="muted">见锦鲤池。</div></div></li>
+        <li><span class="k">5</span><div><b>严重气象预警联动</b><div class="muted">台风、暴雨、大风:当天不浇水,关喷泉。</div></div></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic">🔔</span>告警通知(需要人看)</h3>
+      <ul class="clean">
+        <li><span class="k">警</span><div><b>水泵停机 / 暂停后未恢复</b></div></li>
+        <li><span class="k">警</span><div><b>任一设备掉线超过 10 分钟</b><div class="muted">21 路开关全部纳入。</div></div></li>
+        <li><span class="k">警</span><div><b>气象预警</b></div></li>
+        <li><span class="k">报</span><div><b>每天 07:30 早报</b><div class="muted">灌溉决策、天气、北花园土壤四项、水泵状态、电表状态。电表目前失联,早报会持续提示。</div></div></li>
+      </ul>
+      <p class="small" style="margin-top:10px">通知目前发到 Home Assistant 通知栏。装好官方手机 App 后可推到手机;微信推送需自建转发,列在待办。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 传感器 ================= -->
+<section id="sensors">
+  <div class="sec-head"><span class="num">07</span><div><h2>传感器现状</h2><p>方案依赖的数据来源,以及它们靠不靠得住。</p></div></div>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>数据</th><th>状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>逐日 / 逐小时天气预报</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">16 天逐日、49 小时逐小时,含降雨量、最高最低温、天气状况</td></tr>
+        <tr><td>实时降水量</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">下雨时正常上报,用于记录最近降雨日期</td></tr>
+        <tr><td>北花园土壤七合一</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">湿度、温度、pH、电导率、氮磷钾。湿度走势合理,是灌溉的土壤闸门</td></tr>
+        <tr><td>气象预警</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">松江区级预警</td></tr>
+        <tr><td>「降水量 24h」</td><td class="st"><span class="badge warn">! 有问题</span></td><td class="note">不是真正的 24 小时累计,与瞬时值相同。已改用逐日实况替代</td></tr>
+        <tr><td>罗汉松土壤探头</td><td class="st"><span class="badge warn">! 有问题</span></td><td class="note">读数在几秒内 23% 到 42% 乱跳,需重插或更换,暂不用于判断</td></tr>
+        <tr><td>电表(总功率 / 电量 / 电费)</td><td class="st"><span class="badge crit">✕ 失联</span></td><td class="note">全部无数据,待供应商排查</td></tr>
+        <tr><td>草坪、菜园、花境土壤探头</td><td class="st"><span class="badge wait">— 缺失</span></td><td class="note">目前以北花园探头作全园代理。建议草坪、菜园各加一个</td></tr>
+        <tr><td>现场雨量计</td><td class="st"><span class="badge wait">— 缺失</span></td><td class="note">雨量来自区气象站,夏季局地雷阵雨可能有偏差。可选</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 待办 ================= -->
+<section id="todo">
+  <div class="sec-head"><span class="num">08</span><div><h2>后续待办</h2><p>分三类:供应商处理、软件跟进、可选硬件。</p></div></div>
+  <div class="road">
+    <div class="card">
+      <h3><span class="ic">🤝</span>需要供应商</h3>
+      <ul class="clean">
+        <li><span class="k">1</span><div>删除易微联里「南花园灌溉」按湿度关阀的规则,并把三台 Sonoff 设备转移到业主账号</div></li>
+        <li><span class="k">2</span><div>排查电表为何全部失联</div></li>
+        <li><span class="k">3</span><div>南花园、菜园两台 Sonoff 改为局域网直连,减少掉线</div></li>
+        <li><span class="k">4</span><div>罗汉松土壤探头重插或更换</div></li>
+        <li><span class="k">5</span><div>确认「机柜风扇」开关实际控制什么</div></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic">⚙️</span>软件跟进</h3>
+      <ul class="clean">
+        <li><span class="k">1</span><div><b>罗汉松深浇</b><div class="muted">规则删除后接入:夏 6 天、春秋 8 天、冬 18 天一次,主浇后单开 40 分钟慢渗,前 48 小时降雨 ≥ 5 mm 顺延。点动改 60 分钟,超时保护对它放宽。</div></div></li>
+        <li><span class="k">2</span><div><b>手机推送</b><div class="muted">安装 Home Assistant 官方 App 后切换。</div></div></li>
+        <li><span class="k">3</span><div><b>微信推送</b><div class="muted">企业微信群机器人或微信推送服务,自建转发程序。</div></div></li>
+        <li><span class="k">4</span><div><b>探头到位后</b><div class="muted">把草坪、菜园的土壤湿度加入闸门。</div></div></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ic">🧩</span>可选硬件</h3>
+      <ul class="clean">
+        <li><span class="k">·</span><div>草坪 1 个、菜园 1 个土壤湿度探头(与北花园同款可直接接入现有总线)</div></li>
+        <li><span class="k">·</span><div>现场雨量计</div></li>
+        <li><span class="k">·</span><div>机柜内温度传感器(若机柜确有风扇)</div></li>
+      </ul>
+      <p class="small" style="margin-top:10px">不做自动化的:驱蚊系统(保留手动与 3 分钟自动关)、机柜风扇及其温控、油烟机、全关。</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>景智荟庭院 · 自动化方案 v1 · 2026-09-22<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
+<button class="up" id="up" aria-label="回到顶部">↑</button>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById('theme');
+  var saved=localStorage.getItem('theme');if(saved)root.setAttribute('data-theme',saved);
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var next=dark?'light':'dark';root.setAttribute('data-theme',next);localStorage.setItem('theme',next);
+  });
+  var links=[].slice.call(document.querySelectorAll('#chips a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function setOn(id){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id)});
+    var on=document.querySelector('#chips a.on');if(on)on.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)setOn(e.target.id)})},{rootMargin:'-30% 0px -60% 0px'});
+    secs.forEach(function(s){if(s)io.observe(s)});
+  }
+  var up=document.getElementById('up');
+  addEventListener('scroll',function(){up.classList.toggle('show',scrollY>600)},{passive:true});
+  up.addEventListener('click',function(){scrollTo({top:0,behavior:'smooth'})});
+})();
+</script>
+</body>
+</html>
