@@ -211,7 +211,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <div class="stat" role="listitem"><b>4<small style="font-size:14px;opacity:.8">+2</small></b><span>道闸门,冬季再加两道</span></div>
       <div class="stat" role="listitem"><b>7</b><span>项安全保护与告警</span></div>
     </div>
-    <p class="meta">上海松江 · 更新于 2026 年 9 月 22 日 · 通知目前发到 Home Assistant 通知栏</p>
+    <p class="meta">上海松江 · 更新于 2026 年 9 月 25 日 · 通知目前发到 Home Assistant 通知栏</p>
   </div>
 </header>
 
@@ -232,11 +232,11 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <li class="night"><time>00:35</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>恢复检查</b><span class="tag">任何一台泵仍是关的,发告警</span></div></li>
       <li><time>06:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>灌溉决策与执行</b><span class="tag">夏季 06:00 · 春秋 06:30 · 冬季 10:00。过闸门后依次浇 5 个区,约 76 分钟</span></div></li>
       <li><time>07:30</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>花园早报</b><span class="tag">今天浇了没、为什么;天气、土壤、水泵、电表状态</span></div></li>
-      <li><time>09:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>喷泉与水景开</b><span class="tag">南喷泉、南水景、北水景。风速超过 20 km/h 喷泉不开</span></div></li>
+      <li><time>09:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>南喷泉开</b><span class="tag">风速超过 20 km/h 不开。水景瀑布全天运行</span></div></li>
       <li class="range"><time>11:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">瀑布、过滤泵、增氧泵先拍快照再关闭,12:25 恢复,12:35 检查</span></div></li>
       <li><time>17:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>高温补浇(仅夏季,最高温 ≥ 35°)</b><span class="tag">花境、菜园各 5 分钟,草坪不补,避免叶面过夜带水</span></div></li>
-      <li><time>日落+10′</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>花园灯光开</b><span class="tag">东花园灯、西花园灯、灯光。随日落时间自动变化</span></div></li>
-      <li><time>22:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>喷泉与水景关</b><span class="tag">冬季(12 到 2 月)瀑布同时关,08:00 再开</span></div></li>
+      <li><time>日落+10′</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>花园灯光开</b><span class="tag">东花园灯、西花园灯。随日落时间自动变化</span></div></li>
+      <li><time>22:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>南喷泉关</b><span class="tag">冬季(12 到 2 月)瀑布同时关,08:00 再开</span></div></li>
       <li><time>22:30</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>灯光关</b><span class="tag">周日到周四 22:30,周五周六 23:30</span></div></li>
       <li class="night"><time>23:50</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>降雨日期补记</b><span class="tag">今天预报降雨 ≥ 2 mm 就记为「最近一次下雨」</span></div></li>
       <li class="night range"><time>23:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">与中午相同,00:25 恢复</span></div></li>
@@ -341,10 +341,10 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       </ul>
     </div>
     <div class="card">
-      <h3><span class="ic">🐢</span>龟池 · 喷泉 · 水景</h3>
+      <h3><span class="ic">🐢</span>龟池 · 南喷泉</h3>
       <ul class="clean">
         <li><span class="k">滤</span><div><b>龟池过滤全天运行</b><div class="muted">纳入停机告警,停超过 15 分钟通知。</div></div></li>
-        <li><span class="k">泉</span><div><b>南喷泉、南水景、北水景 09:00 开 22:00 关</b><div class="muted">白天观赏,夜间省电降噪。</div></div></li>
+        <li><span class="k">泉</span><div><b>南喷泉 09:00 开 22:00 关</b><div class="muted">白天观赏,夜间省电降噪。</div></div></li>
         <li><span class="k">风</span><div><b>喷泉大风保护</b><div class="muted">风速 &gt; 20 km/h 持续 10 分钟关喷泉;回落 &lt; 15 km/h 持续 30 分钟且在运行时段内自动重开。</div></div></li>
       </ul>
     </div>
@@ -360,7 +360,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <div><span>关 · 周日至周四</span><b>22:30</b></div>
       <div><span>关 · 周五周六</span><b>23:30</b></div>
     </div>
-    <p class="muted">东花园灯、西花园灯、灯光三路同开同关。原有遥控器按键随时可以手动覆盖。</p>
+    <p class="muted">东花园灯、西花园灯同开同关。遥控器按键随时可以手动开关,定时不会和遥控冲突。</p>
   </div>
 </section>
 
@@ -451,7 +451,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
 
 </main>
 
-<footer>景智荟庭院 · 自动化方案 v1 · 2026-09-22<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
+<footer>景智荟庭院 · 自动化方案 v1.1 · 2026-09-25<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
 <button class="up" id="up" aria-label="回到顶部">↑</button>
 
 <script>
