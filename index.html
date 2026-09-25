@@ -211,7 +211,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <div class="stat" role="listitem"><b>4<small style="font-size:14px;opacity:.8">+2</small></b><span>道闸门,冬季再加两道</span></div>
       <div class="stat" role="listitem"><b>7</b><span>项安全保护与告警</span></div>
     </div>
-    <p class="meta">上海松江 · 更新于 2026 年 9 月 25 日 · 通知目前发到 Home Assistant 通知栏</p>
+    <p class="meta">上海松江 · 更新于 2026 年 9 月 26 日 · 通知目前发到 Home Assistant 通知栏</p>
   </div>
 </header>
 
@@ -334,7 +334,8 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <h3><span class="ic">🐟</span>锦鲤池</h3>
       <ul class="clean">
         <li><span class="k">停</span><div><b>每天 11:55 与 23:55 暂停 30 分钟</b><div class="muted">瀑布、过滤泵、增氧泵。关闭前先拍状态快照,30 分钟后恢复到暂停前的样子,你手动关掉的不会被自动打开。</div></div></li>
-        <li><span class="k">警</span><div><b>泵停机告警</b><div class="muted">过滤泵或增氧泵在非暂停时段停超过 15 分钟,或暂停结束 10 分钟后仍未恢复,立刻通知。夏季高温缺氧几小时就有危险。</div></div></li>
+        <li><span class="k">警</span><div><b>泵与瀑布停机告警</b><div class="muted">过滤泵、增氧泵或瀑布在非暂停时段停超过 15 分钟,或暂停结束 10 分钟后仍未恢复,立刻通知。夏季高温缺氧几小时就有危险。</div></div></li>
+        <li><span class="k">电</span><div><b>断电恢复自动回到原状态</b><div class="muted">瀑布、锦鲤池过滤、龟池过滤设为通电记忆,断电恢复后回到断电前的开关状态。</div></div></li>
         <li><span class="k">排</span><div><b>排水超时保护</b><div class="muted">排水阀打开 30 分钟自动关闭并通知,防止把池子放空。</div></div></li>
         <li><span class="k">冬</span><div><b>冬季瀑布夜停</b><div class="muted">12 到 2 月 22:00 关、08:00 开,减少水面夜间降温。过滤与增氧不受影响。</div></div></li>
       </ul>
@@ -380,10 +381,10 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
     <div class="card">
       <h3><span class="ic">🔔</span>告警通知(需要人看)</h3>
       <ul class="clean">
-        <li><span class="k">警</span><div><b>水泵停机 / 暂停后未恢复</b></div></li>
+        <li><span class="k">警</span><div><b>水泵、瀑布停机 / 暂停后未恢复</b></div></li>
         <li><span class="k">警</span><div><b>任一设备掉线超过 10 分钟</b><div class="muted">21 路开关全部纳入。</div></div></li>
         <li><span class="k">警</span><div><b>气象预警</b></div></li>
-        <li><span class="k">报</span><div><b>每天 07:30 早报</b><div class="muted">灌溉决策、天气、北花园土壤四项、水泵状态、电表状态。电表目前失联,早报会持续提示。</div></div></li>
+        <li><span class="k">报</span><div><b>每天 07:30 早报</b><div class="muted">灌溉决策、天气、北花园土壤四项、水泵与瀑布、电表。若当天灌溉决策没有运行,早报标题会带警示。</div></div></li>
       </ul>
       <p class="small" style="margin-top:10px">通知目前发到 Home Assistant 通知栏。装好官方手机 App 后可推到手机;微信推送需自建转发,列在待办。</p>
     </div>
@@ -403,8 +404,8 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
         <tr><td>北花园土壤七合一</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">湿度、温度、pH、电导率、氮磷钾。湿度走势合理,是灌溉的土壤闸门</td></tr>
         <tr><td>气象预警</td><td class="st"><span class="badge good">✓ 可用</span></td><td class="note">松江区级预警</td></tr>
         <tr><td>「降水量 24h」</td><td class="st"><span class="badge warn">! 有问题</span></td><td class="note">不是真正的 24 小时累计,与瞬时值相同。已改用逐日实况替代</td></tr>
-        <tr><td>罗汉松土壤探头</td><td class="st"><span class="badge warn">! 有问题</span></td><td class="note">读数在几秒内 23% 到 42% 乱跳,需重插或更换,暂不用于判断</td></tr>
-        <tr><td>电表(总功率 / 电量 / 电费)</td><td class="st"><span class="badge crit">✕ 失联</span></td><td class="note">全部无数据,待供应商排查</td></tr>
+        <tr><td>罗汉松土壤探头</td><td class="st"><span class="badge wait">— 已移除</span></td><td class="note">9 月 25 日供应商更换南花园灌溉设备,原探头随旧设备移除</td></tr>
+        <tr><td>电表(总功率 / 电量 / 电费)</td><td class="st"><span class="badge good">✓ 已恢复</span></td><td class="note">9 月 26 日起恢复上报,早报持续监测</td></tr>
         <tr><td>草坪、菜园、花境土壤探头</td><td class="st"><span class="badge wait">— 缺失</span></td><td class="note">目前以北花园探头作全园代理。建议草坪、菜园各加一个</td></tr>
         <tr><td>现场雨量计</td><td class="st"><span class="badge wait">— 缺失</span></td><td class="note">雨量来自区气象站,夏季局地雷阵雨可能有偏差。可选</td></tr>
       </tbody>
@@ -420,10 +421,10 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
     <div class="card">
       <h3><span class="ic">🤝</span>需要供应商</h3>
       <ul class="clean">
-        <li><span class="k">1</span><div>删除易微联里「南花园灌溉」按湿度关阀的规则,并把三台 Sonoff 设备转移到业主账号</div></li>
-        <li><span class="k">2</span><div>排查电表为何全部失联</div></li>
+        <li><span class="k">1</span><div>南花园灌溉设备已于 9 月 25 日更换。待确认:新阀门能否稳定打开、Sonoff 设备是否转移到业主账号</div></li>
+        <li><span class="k">2</span><div>电表已恢复,确认原因</div></li>
         <li><span class="k">3</span><div>南花园、菜园两台 Sonoff 改为局域网直连,减少掉线</div></li>
-        <li><span class="k">4</span><div>罗汉松土壤探头重插或更换</div></li>
+        <li><span class="k">4</span><div>今后维护前后告知业主,避免自动化与维护冲突</div></li>
         <li><span class="k">5</span><div>确认「机柜风扇」开关实际控制什么</div></li>
       </ul>
     </div>
@@ -450,7 +451,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
 
 </main>
 
-<footer>景智荟庭院 · 自动化方案 v1.2 · 2026-09-25<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
+<footer>景智荟庭院 · 自动化方案 v1.3 · 2026-09-26<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
 <button class="up" id="up" aria-label="回到顶部">↑</button>
 
 <script>
