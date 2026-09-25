@@ -232,11 +232,10 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <li class="night"><time>00:35</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>恢复检查</b><span class="tag">任何一台泵仍是关的,发告警</span></div></li>
       <li><time>06:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>灌溉决策与执行</b><span class="tag">夏季 06:00 · 春秋 06:30 · 冬季 10:00。过闸门后依次浇 5 个区,约 76 分钟</span></div></li>
       <li><time>07:30</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>花园早报</b><span class="tag">今天浇了没、为什么;天气、土壤、水泵、电表状态</span></div></li>
-      <li><time>09:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>南喷泉开</b><span class="tag">风速超过 20 km/h 不开。水景瀑布全天运行</span></div></li>
       <li class="range"><time>11:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">瀑布、过滤泵、增氧泵先拍快照再关闭,12:25 恢复,12:35 检查</span></div></li>
       <li><time>17:00</time><span class="mk"><i class="dot c-irr"></i></span><div class="ev"><b>高温补浇(仅夏季,最高温 ≥ 35°)</b><span class="tag">花境、菜园各 5 分钟,草坪不补,避免叶面过夜带水</span></div></li>
       <li><time>日落+10′</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>花园灯光开</b><span class="tag">东花园灯、西花园灯。随日落时间自动变化</span></div></li>
-      <li><time>22:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>南喷泉关</b><span class="tag">冬季(12 到 2 月)瀑布同时关,08:00 再开</span></div></li>
+      <li><time>22:00</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>南喷泉兜底关闭</b><span class="tag">喷泉只手动开,若忘关到点自动关。冬季(12 到 2 月)瀑布同时关,08:00 再开</span></div></li>
       <li><time>22:30</time><span class="mk"><i class="dot dia c-light"></i></span><div class="ev"><b>灯光关</b><span class="tag">周日到周四 22:30,周五周六 23:30</span></div></li>
       <li class="night"><time>23:50</time><span class="mk"><i class="dot tri"></i></span><div class="ev"><b>降雨日期补记</b><span class="tag">今天预报降雨 ≥ 2 mm 就记为「最近一次下雨」</span></div></li>
       <li class="night range"><time>23:55</time><span class="mk"><i class="dot sq c-water"></i></span><div class="ev"><b>锦鲤池泵暂停 30 分钟</b><span class="tag">与中午相同,00:25 恢复</span></div></li>
@@ -344,8 +343,8 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
       <h3><span class="ic">🐢</span>龟池 · 南喷泉</h3>
       <ul class="clean">
         <li><span class="k">滤</span><div><b>龟池过滤全天运行</b><div class="muted">纳入停机告警,停超过 15 分钟通知。</div></div></li>
-        <li><span class="k">泉</span><div><b>南喷泉 09:00 开 22:00 关</b><div class="muted">白天观赏,夜间省电降噪。</div></div></li>
-        <li><span class="k">风</span><div><b>喷泉大风保护</b><div class="muted">风速 &gt; 20 km/h 持续 10 分钟关喷泉;回落 &lt; 15 km/h 持续 30 分钟且在运行时段内自动重开。</div></div></li>
+        <li><span class="k">泉</span><div><b>南喷泉平时保持关闭,只手动开</b><div class="muted">需要时在仪表盘或用遥控 2 号键打开。22:00 若仍开着自动关闭。</div></div></li>
+        <li><span class="k">风</span><div><b>喷泉大风保护</b><div class="muted">手动打开后若风速 &gt; 20 km/h 持续 10 分钟,自动关闭并通知。风停后不会自动重开。</div></div></li>
       </ul>
     </div>
   </div>
@@ -451,7 +450,7 @@ footer{padding:34px 0 calc(28px + env(safe-area-inset-bottom));text-align:center
 
 </main>
 
-<footer>景智荟庭院 · 自动化方案 v1.1 · 2026-09-25<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
+<footer>景智荟庭院 · 自动化方案 v1.2 · 2026-09-25<br><span style="opacity:.7">所有逻辑运行在 Home Assistant 内;本页为方案说明。</span></footer>
 <button class="up" id="up" aria-label="回到顶部">↑</button>
 
 <script>
